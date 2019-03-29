@@ -9,7 +9,10 @@ function keygen() {
 		return $EXIT_FAILURE
 	else
 		declare -rx user="$1"
-		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user" -f "$HOME/.ssh/keys/${user}_ed25519_private_OpenSSH"
+		declare -rx prefix="$HOME/.ssh/keys/${user}_ed25519_"
+		declare -rx suffix=_OpenSSH
+		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user" -f "${prefix}private$suffix"
+		mv "$prefix"{"private$suffix.pub","public$suffix"}
 		return $EXIT_SUCCESS
 	fi
 }
