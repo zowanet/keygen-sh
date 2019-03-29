@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+function keygen() {
+	declare -rix EXIT_FAILURE=1
+	declare -rix EXIT_SUCCESS=0
+	if [ $# -ne 1 ]; then
+		>& 2 echo "Usage: $0 USER"
+		return $EXIT_FAILURE
+	else
+		declare -rx user="$1"
+		# TODO: generate keys for $user
+		return $EXIT_SUCCESS
+	fi
+}
+
+keygen "$@"
