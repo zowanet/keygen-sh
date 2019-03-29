@@ -9,7 +9,7 @@ function keygen() {
 		return $EXIT_FAILURE
 	else
 		declare -rx user="$1"
-		# TODO: generate keys for $user
+		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user" -f "$HOME/.ssh/keys/${user}_ed25519_private_OpenSSH"
 		return $EXIT_SUCCESS
 	fi
 }
