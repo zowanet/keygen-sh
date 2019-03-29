@@ -13,6 +13,7 @@ function keygen() {
 		declare -rx suffix=_OpenSSH
 		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user" -f "${prefix}private$suffix"
 		mv "$prefix"{"private$suffix.pub","public$suffix"}
+		chmod 0600 "$_"
 		return $EXIT_SUCCESS
 	fi
 }
