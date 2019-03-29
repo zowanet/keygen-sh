@@ -4,14 +4,19 @@ set -euo pipefail
 function keygen() {
 	declare -rix EXIT_FAILURE=1
 	declare -rix EXIT_SUCCESS=0
-	if [ $# -ne 1 ]; then
-		>& 2 echo "Usage: $0 USER"
+	if [ $# -ne 1 ] || ! grep -Eq '^([^@]+|[^@]+@[^@]+)$' <<< "$1"; then
+		>& 2 echo "Usage: $0 USER[@HOST]"
 		return $EXIT_FAILURE
 	else
 		declare -rx user="$1"
+		declare -rx host="$(
+			if [[ $user != *\@* ]]; then
+				echo "@$(hostname)"
+			fi
+		)"
 		declare -rx prefix="$HOME/.ssh/keys/${user}_ed25519_"
 		declare -rx suffix=_OpenSSH
-		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user" -f "${prefix}private$suffix"
+		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
 		mv "$prefix"{"private$suffix.pub","public$suffix"}
 		chmod 0600 "$_"
 		return $EXIT_SUCCESS
