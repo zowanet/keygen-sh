@@ -8,18 +8,27 @@ function keygen() {
 		>& 2 echo "Usage: $(basename "$0") USER[@HOST]"
 		return $EXIT_FAILURE
 	else
-		declare -rx user="$1"
-		declare -rx host="$(
-			if [[ $user != *\@* ]]; then
-				echo "@$(hostname)"
-			fi
-		)"
-		declare -rx prefix="$HOME/.ssh/keys/${user}_ed25519_"
-		declare -rx suffix=_OpenSSH
-		ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
-		mv "$prefix"{"private$suffix.pub","public$suffix"}
-		chmod 0600 "$_"
-		return $EXIT_SUCCESS
+		declare -rx=dir="$HOME/.ssh/keys"
+		if [ ! -d "$dir"]; then
+			>& 2 echo "Target directory not found: $dir"
+			return $EXIT_FAILURE
+		elif [ ! -w "$dir" ]; then
+			>& 2 echo "Target directory not writable: $dir"
+			return $EXIT_FAILURE
+		else
+			declare -rx user="$1"
+			declare -rx host="$(
+				if [[ $user != *\@* ]]; then
+					echo "@$(hostname)"
+				fi
+			)"
+			declare -rx prefix="$dir/${user}_ed25519_"
+			declare -rx suffix=_OpenSSH
+			ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
+			mv "$prefix"{"private$suffix.pub","public$suffix"}
+			chmod 0600 "$_"
+			return $EXIT_SUCCESS
+		fi
 	fi
 }
 
