@@ -16,7 +16,7 @@ function keygen() {
 		)"
 		declare -rx prefix="$HOME/.ssh/keys/${user}_ed25519_"
 		declare -rx suffix=_OpenSSH
-		ssh-keygen -vvv -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
+		ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
 		mv "$prefix"{"private$suffix.pub","public$suffix"}
 		chmod 0600 "$_"
 		return $EXIT_SUCCESS
