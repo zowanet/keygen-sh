@@ -5,7 +5,7 @@ function keygen() {
 	declare -rix EXIT_FAILURE=1
 	declare -rix EXIT_SUCCESS=0
 	if [ $# -ne 1 ] || ! grep -Eq '^([^@]+|[^@]+@[^@]+)$' <<< "$1"; then
-		>& 2 echo "Usage: $0 USER[@HOST]"
+		>& 2 echo "Usage: $(basename "$0") USER[@HOST]"
 		return $EXIT_FAILURE
 	else
 		declare -rx user="$1"
