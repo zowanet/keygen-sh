@@ -4,17 +4,15 @@ set -euo pipefail
 function keygen() {
 	declare -rix EXIT_FAILURE=1
 	declare -rix EXIT_SUCCESS=0
+	declare -ix return_value=$EXIT_FAILURE
 	if [ $# -ne 1 ] || ! grep -Eq '^([^@]+|[^@]+@[^@]+)$' <<< "$1"; then
 		>& 2 echo "Usage: $(basename "$0") USER[@HOST]"
-		return $EXIT_FAILURE
 	else
 		declare -rx dir="$HOME/.ssh/keys"
 		if [ ! -d "$dir" ]; then
 			>& 2 echo "Target directory not found: $dir"
-			return $EXIT_FAILURE
 		elif [ ! -w "$dir" ]; then
 			>& 2 echo "Target directory not writable: $dir"
-			return $EXIT_FAILURE
 		else
 			declare -rx user="$1"
 			declare -rx host="$(
@@ -27,9 +25,10 @@ function keygen() {
 			ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
 			mv "$prefix"{"private$suffix.pub","public$suffix"}
 			chmod 0600 "$_"
-			return $EXIT_SUCCESS
+			return_value=$EXIT_SUCCESS
 		fi
 	fi
+	return $return_value
 }
 
 keygen "$@"
