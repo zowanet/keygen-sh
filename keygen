@@ -2,7 +2,11 @@
 if [ "${BASH_VERSINFO[0]}" -lt 5 ]; then
 	>& 2 echo -e "You are running an old version of Bash: $BASH_VERSION\nConsider upgrading to version 5 or later\n"
 fi
-set -euo pipefail
+set -B # brace expansion
+set -o errexit
+set -o noclobber
+set -o nounset
+set -o pipefail
 
 function keygen() {
 	declare -rix EXIT_FAILURE=1
