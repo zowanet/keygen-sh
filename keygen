@@ -8,8 +8,8 @@ function keygen() {
 		>& 2 echo "Usage: $(basename "$0") USER[@HOST]"
 		return $EXIT_FAILURE
 	else
-		declare -rx=dir="$HOME/.ssh/keys"
-		if [ ! -d "$dir"]; then
+		declare -rx dir="$HOME/.ssh/keys"
+		if [ ! -d "$dir" ]; then
 			>& 2 echo "Target directory not found: $dir"
 			return $EXIT_FAILURE
 		elif [ ! -w "$dir" ]; then
