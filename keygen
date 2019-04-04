@@ -25,6 +25,7 @@ function keygen() {
 			ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
 			mv "$prefix"{"private$suffix.pub","public$suffix"}
 			chmod 0600 "$_"
+			ls -l "$prefix"{private,public}"$suffix"
 			return_value=$EXIT_SUCCESS
 		fi
 	fi
