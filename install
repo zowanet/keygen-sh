@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [ "${BASH_VERSINFO[0]}" -lt 5 ]; then
-	>& 2 echo -e "You are running an old version of Bash: $BASH_VERSION\nConsider upgrading to version 5 or later\n"
+	>& 2 printf 'You are running an old version of Bash: %s\nConsider upgrading to version 5 or later\n' "$(tput rev)$BASH_VERSION$(tput sgr0)"
 fi
 set -o errexit
 set -o noclobber
@@ -8,33 +8,33 @@ set -o nounset
 set -o pipefail
 
 function install() {
-	declare -rix EXIT_FAILURE=1
-	declare -rix EXIT_SUCCESS=0
-	declare -ix return_value=$EXIT_FAILURE
-	if [ $# -lt 3 ] || [ ! -d "$1" ]; then
-		>& 2 echo "Usage: $(basename "$0") SRC-DIR DEST-DIR FILE..."
+	declare -ir EXIT_FAILURE=1
+	declare -ir EXIT_SUCCESS=0
+	declare -i return_value=$EXIT_FAILURE
+	if [ $# -lt 3 ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ ! -d "$1" ]; then
+		>& 2 printf 'Usage: %s SRC-DIR DEST-DIR FILE...\n' "$(basename "${BASH_SOURCE[0]}")"
 	else
-		declare -rx src_dir="$(realpath "$1")"
-		declare -rx dest_dir="$2"
+		declare -r src_dir="$(realpath "$1")"
+		declare -r dest_dir="$2"
 		if [ ! -d "$dest_dir" ]; then
-			mkdir --parents "$dest_dir"
+			mkdir -m 0700 -p "$dest_dir"
 		fi
 		shift 2
-		declare -arx files=("$@")
+		declare -ar files=("$@")
 		return_value=$EXIT_SUCCESS
 		for file in "${files[@]}"; do
 			if [ ! -f "$src_dir/$file" ]; then
-				>& 2 echo "Source file not found: $src_dir/$file"
+				>& 2 printf 'Source file not found: %s\n' "$(tput rev)$src_dir/$file$(tput sgr0)"
 				return_value=$EXIT_FAILURE
 			fi
 		done
 		if [ $return_value -eq $EXIT_SUCCESS ]; then
 			for file in "${files[@]}"; do
-				declare -rx target="$dest_dir/$file"
+				declare -r target="$dest_dir/$file"
 				if [ -h "$target" ]; then
 					unlink "$target"
 				fi
-				ln --symbolic "$src_dir/$file" "$target"
+				ln -s "$src_dir/$file" "$target"
 			done
 		fi
 	fi
