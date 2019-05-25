@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [ "${BASH_VERSINFO[0]}" -lt 5 ]; then
-	>& 2 echo -e "You are running an old version of Bash: $BASH_VERSION\nConsider upgrading to version 5 or later\n"
+	>& 2 printf 'You are running an old version of Bash: %s\nConsider upgrading to version 5 or later\n' "$(tput rev)$BASH_VERSION$(tput sgr0)"
 fi
 set -B # brace expansion
 set -o errexit
@@ -9,26 +9,26 @@ set -o nounset
 set -o pipefail
 
 function keygen() {
-	declare -rix EXIT_FAILURE=1
-	declare -rix EXIT_SUCCESS=0
-	declare -ix return_value=$EXIT_FAILURE
+	declare -ir EXIT_FAILURE=1
+	declare -ir EXIT_SUCCESS=0
+	declare -i return_value=$EXIT_FAILURE
 	if [ $# -ne 1 ] || ! grep -Eq '^([^@]+|[^@]+@[^@]+)$' <<< "$1"; then
-		>& 2 echo "Usage: $(basename "$0") USER[@HOST]"
+		>& 2 printf 'Usage: %s USER[@HOST]\n' "$(basename "${BASH_SOURCE[0]}")"
 	else
-		declare -rx dir="$HOME/.ssh/keys"
+		declare -r dir="$HOME/.ssh/keys"
 		if [ ! -d "$dir" ]; then
-			>& 2 echo "Target directory not found: $dir"
+			>& 2 printf 'Target directory not found: %s\n' "$(tput rev)$dir$(tput sgr0)"
 		elif [ ! -w "$dir" ]; then
-			>& 2 echo "Target directory not writable: $dir"
+			>& 2 printf 'Target directory not writable: %s\n' "$(tput rev)$dir$(tput sgr0)"
 		else
-			declare -rx user="$1"
-			declare -rx host="$(
+			declare -r user="$1"
+			declare -r host="$(
 				if [[ $user != *\@* ]]; then
-					echo "@$(hostname)"
+					printf '@%s' "$(hostname)"
 				fi
 			)"
-			declare -rx prefix="$dir/${user}_ed25519_"
-			declare -rx suffix=_OpenSSH
+			declare -r prefix="$dir/${user}_ed25519_"
+			declare -r suffix=_OpenSSH
 			ssh-keygen -q -t ed25519 -a 100 -N '' -C "$user$host" -f "${prefix}private$suffix"
 			mv "$prefix"{"private$suffix.pub","public$suffix"}
 			chmod 0600 "$_"
